@@ -1,6 +1,8 @@
 package entities
 
-import tl "github.com/JoelOtter/termloop"
+import (
+	tl "github.com/JoelOtter/termloop"
+)
 
 type Laser struct {
 	*tl.Entity
@@ -25,8 +27,13 @@ func (laser *Laser) Tick(e tl.Event) {
 }
 
 func (laser *Laser) Collide(collision tl.Physical) {
-	// Check if it's a Rectangle we're colliding with
 	if _, ok := collision.(*tl.Rectangle); ok {
+		laser.Level.RemoveEntity(laser)
+	}
+	if _, ok := collision.(*Alien); ok {
+		laser.Level.RemoveEntity(laser)
+	}
+	if _, ok := collision.(*Laser); ok {
 		laser.Level.RemoveEntity(laser)
 	}
 }
