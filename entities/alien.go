@@ -19,7 +19,7 @@ func (alien *Alien) Draw(screen *tl.Screen) {
 	alien.Entity.Draw(screen)
 }
 
-func (alien *Alien) Tick(e tl.Event) {
+func (alien *Alien) Tick(_ tl.Event) {
 	timeDelta := alien.Game.Screen().TimeDelta()
 	alien.TimeDelta += timeDelta
 	if alien.TimeDelta > *alien.WaitingTime {
