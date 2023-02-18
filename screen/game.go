@@ -2,8 +2,10 @@ package screen
 
 import (
 	_ "embed"
+	"fmt"
 	tl "github.com/JoelOtter/termloop"
 	"gophers_invader/entities"
+	"time"
 )
 
 //go:embed canvas/player.txt
@@ -42,11 +44,28 @@ func NewGame() {
 		AlienHighByte:   alienHighBytes,
 		WaitingTime:     1.0,
 	}
-	aliens.CreateCluster()
+	aliens.Draw()
 
-	level.AddEntity(tl.NewRectangle(-40, -12, 80, 1, tl.ColorBlue))
-	level.AddEntity(tl.NewRectangle(-40, -12, 1, 30, tl.ColorBlue))
-	level.AddEntity(tl.NewRectangle(40, -12, 1, 30, tl.ColorBlue))
+	level.AddEntity(tl.NewRectangle(-40, -12, 80, 1, tl.ColorWhite))
+	level.AddEntity(tl.NewRectangle(-40, -12, 1, 25, tl.ColorWhite))
+	level.AddEntity(tl.NewRectangle(40, -12, 1, 25, tl.ColorWhite))
+	level.AddEntity(tl.NewRectangle(-40, 13, 80, 1, tl.ColorWhite))
+	level.AddEntity(tl.NewText(25, 15, "Score:", tl.ColorRed, tl.ColorBlack))
+	level.AddEntity(tl.NewText(-25, 15, "Time:", tl.ColorGreen, tl.ColorBlack))
+
+	timer := tl.NewFpsText(-25, 16, tl.ColorGreen, tl.ColorBlack, 60)
+	level.AddEntity(timer)
+
 	game.Screen().SetLevel(level)
+	go Timer(timer)
 	game.Start()
+}
+
+func Timer(timer *tl.FpsText) {
+	deltaTime := 0.0
+	for {
+		deltaTime += 0.01
+		timer.SetText(fmt.Sprintf("%f", deltaTime))
+		time.Sleep(time.Millisecond)
+	}
 }

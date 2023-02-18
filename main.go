@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	screen.NewGame()
+	screen.MainMenu()
 }

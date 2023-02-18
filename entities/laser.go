@@ -17,7 +17,7 @@ func (laser *Laser) Draw(screen *tl.Screen) {
 	laser.Entity.Draw(screen)
 }
 
-func (laser *Laser) Tick(e tl.Event) {
+func (laser *Laser) Tick(_ tl.Event) {
 	timeDelta := laser.Game.Screen().TimeDelta()
 	laser.TimeDelta += timeDelta
 	if laser.TimeDelta > laser.WaitingTime {
