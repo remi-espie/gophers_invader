@@ -17,6 +17,7 @@ func (button *Button) Draw(screen *tl.Screen) {
 
 func (button *Button) Collide(collision tl.Physical) {
 	if _, ok := collision.(*Laser); ok {
+		collision.(*Laser).Level.RemoveEntity(collision.(*Laser))
 		button.Action()
 	}
 }

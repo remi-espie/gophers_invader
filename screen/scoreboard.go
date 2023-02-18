@@ -13,7 +13,7 @@ import (
 	"strconv"
 )
 
-func Scoreboard(game *tl.Game) {
+func Scoreboard(game *tl.Game, mainMenuLevel *tl.BaseLevel) {
 
 	level := tl.NewBaseLevel(tl.Cell{
 		Bg: tl.ColorBlack,
@@ -36,6 +36,7 @@ func Scoreboard(game *tl.Game) {
 			return
 		}
 	}(sqliteDatabase)
+
 	createTable(sqliteDatabase)
 
 	// DISPLAY INSERTED RECORDS
@@ -46,7 +47,7 @@ func Scoreboard(game *tl.Game) {
 		Level:     level,
 		Text:      "Main menu",
 		Action: func() {
-			MainMenu(game)
+			game.Screen().SetLevel(mainMenuLevel)
 		},
 	}
 
@@ -56,6 +57,7 @@ func Scoreboard(game *tl.Game) {
 	level.AddEntity(tl.NewRectangle(-20, -12, 1, 25, tl.ColorWhite))
 	level.AddEntity(tl.NewRectangle(20, -12, 1, 25, tl.ColorWhite))
 	level.AddEntity(tl.NewRectangle(-20, 13, 40, 1, tl.ColorWhite))
+
 	level.AddEntity(tl.NewText(-15, -11, "Name:", tl.ColorBlue, tl.ColorBlack))
 	level.AddEntity(tl.NewText(-5, -11, "Score:", tl.ColorBlue, tl.ColorBlack))
 	level.AddEntity(tl.NewText(5, -11, "Duration:", tl.ColorBlue, tl.ColorBlack))
@@ -77,7 +79,28 @@ func Scoreboard(game *tl.Game) {
 	level.AddEntity(&player)
 
 	game.Screen().SetLevel(level)
-	game.Start()
+	//game.Start()
+}
+
+func AddScore(name string, score int, duration float32) {
+	file, err := os.OpenFile("sqlite-database.db", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	err = file.Close()
+	if err != nil {
+		return
+	}
+
+	sqliteDatabase, _ := sql.Open("sqlite3", "./sqlite-database.db")
+	defer func(sqliteDatabase *sql.DB) {
+		err := sqliteDatabase.Close()
+		if err != nil {
+			return
+		}
+	}(sqliteDatabase)
+
+	insertScore(sqliteDatabase, score, duration, name)
 }
 
 func createTable(db *sql.DB) {

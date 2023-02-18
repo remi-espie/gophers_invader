@@ -22,7 +22,7 @@ func MainMenu(game *tl.Game) {
 		Level:     level,
 		Text:      "New Game",
 		Action: func() {
-			NewGame(game)
+			NewGame(game, level)
 		},
 	}
 
@@ -40,7 +40,7 @@ func MainMenu(game *tl.Game) {
 		Level:     level,
 		Text:      "Scoreboard",
 		Action: func() {
-			Scoreboard(game)
+			Scoreboard(game, level)
 		},
 	}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	tl "github.com/JoelOtter/termloop"
 	"gophers_invader/entities"
+	"strconv"
 	"time"
 )
 
@@ -20,19 +21,24 @@ var alienMiddleBytes []byte
 //go:embed canvas/aliens/alien_high.txt
 var alienHighBytes []byte
 
-func NewGame(game *tl.Game) {
+func NewGame(game *tl.Game, mainMenuLevel *tl.BaseLevel) {
 
 	level := tl.NewBaseLevel(tl.Cell{
 		Bg: tl.ColorBlack,
 		Ch: ' ',
 	})
 
+	playerGameOver := false
+
 	player := entities.Player{
-		Entity: tl.NewEntityFromCanvas(0, 10, entities.CreateCanvas(playerBytes)),
-		Level:  level,
-		Game:   game,
+		Entity:   tl.NewEntityFromCanvas(0, 10, entities.CreateCanvas(playerBytes)),
+		Level:    level,
+		Game:     game,
+		GameOver: &playerGameOver,
 	}
 	level.AddEntity(&player)
+
+	waintingTime := 1.0
 
 	aliens := entities.AlienCluster{
 		Level:           level,
@@ -40,9 +46,15 @@ func NewGame(game *tl.Game) {
 		AlienMiddleByte: alienMiddleBytes,
 		AlienLowByte:    alienLowBytes,
 		AlienHighByte:   alienHighBytes,
-		WaitingTime:     1.0,
+		WaitingTime:     &waintingTime,
 	}
-	aliens.Draw()
+	aliens.CreateCluster()
+
+	gameOverZone := entities.GameOverZone{
+		Entity:      tl.NewEntity(-40, 0, 80, 1),
+		EnteredZone: false,
+	}
+	level.AddEntity(&gameOverZone)
 
 	level.AddEntity(tl.NewRectangle(-40, -12, 80, 1, tl.ColorWhite))
 	level.AddEntity(tl.NewRectangle(-40, -12, 1, 25, tl.ColorWhite))
@@ -53,17 +65,35 @@ func NewGame(game *tl.Game) {
 
 	timer := tl.NewFpsText(-25, 16, tl.ColorGreen, tl.ColorBlack, 60)
 	level.AddEntity(timer)
+	scoreText := tl.NewFpsText(25, 16, tl.ColorGreen, tl.ColorBlack, 60)
+	level.AddEntity(scoreText)
 
 	game.Screen().SetLevel(level)
-	go Timer(timer)
-	game.Start()
+	go Loop(timer, scoreText, &waintingTime, level, gameOverZone, game, mainMenuLevel, &playerGameOver)
+	//game.Start()
 }
 
-func Timer(timer *tl.FpsText) {
-	deltaTime := 0.0
+func Loop(timer *tl.FpsText, scoreText *tl.FpsText, waintingTime *float64, level *tl.BaseLevel, gameOverZone entities.GameOverZone, game *tl.Game, mainMenuLevel *tl.BaseLevel, playerGameOver *bool) {
+	deltaTime := float32(0.0)
 	for {
 		deltaTime += 0.01
 		timer.SetText(fmt.Sprintf("%.4f", deltaTime))
+
+		score := 55
+		for _, entity := range level.Entities {
+			if _, ok := entity.(*entities.Alien); ok {
+				score -= 1
+			}
+		}
+
+		bonus := int((1.0 / *waintingTime) * 100)
+		scoreText.SetText(strconv.Itoa(score * bonus))
+
+		if gameOverZone.EnteredZone || *playerGameOver {
+			GameOver(game, score*bonus, deltaTime, mainMenuLevel)
+			break
+		}
+
 		time.Sleep(time.Millisecond)
 	}
 }

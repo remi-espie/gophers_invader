@@ -2,14 +2,14 @@ package entities
 
 import (
 	tl "github.com/JoelOtter/termloop"
-	"os"
 )
 
 type Player struct {
 	*tl.Entity
-	Game  *tl.Game
-	prevX int
-	Level *tl.BaseLevel
+	Game     *tl.Game
+	prevX    int
+	Level    *tl.BaseLevel
+	GameOver *bool
 }
 
 func (player *Player) Draw(screen *tl.Screen) {
@@ -39,10 +39,10 @@ func (player *Player) Collide(collision tl.Physical) {
 		player.SetPosition(player.prevX, +10)
 	}
 	if _, ok := collision.(*Alien); ok {
-		os.Exit(0)
+		*player.GameOver = true
 	}
 	if _, ok := collision.(*Laser); ok {
-		os.Exit(0)
+		*player.GameOver = true
 	}
 }
 
