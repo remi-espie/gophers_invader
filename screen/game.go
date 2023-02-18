@@ -20,9 +20,7 @@ var alienMiddleBytes []byte
 //go:embed canvas/aliens/alien_high.txt
 var alienHighBytes []byte
 
-func NewGame() {
-	game := tl.NewGame()
-	game.Screen().SetFps(60)
+func NewGame(game *tl.Game) {
 
 	level := tl.NewBaseLevel(tl.Cell{
 		Bg: tl.ColorBlack,
@@ -65,7 +63,7 @@ func Timer(timer *tl.FpsText) {
 	deltaTime := 0.0
 	for {
 		deltaTime += 0.01
-		timer.SetText(fmt.Sprintf("%f", deltaTime))
+		timer.SetText(fmt.Sprintf("%.4f", deltaTime))
 		time.Sleep(time.Millisecond)
 	}
 }

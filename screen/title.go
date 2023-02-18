@@ -10,9 +10,7 @@ import (
 //go:embed canvas/art.txt
 var titleArt []byte
 
-func MainMenu() {
-	game := tl.NewGame()
-	game.Screen().SetFps(60)
+func MainMenu(game *tl.Game) {
 
 	level := tl.NewBaseLevel(tl.Cell{
 		Bg: tl.ColorBlack,
@@ -21,21 +19,28 @@ func MainMenu() {
 
 	buttonPlay := entities.Button{
 		Rectangle: tl.NewRectangle(-8, 4, 16, 3, tl.ColorGreen),
-		Game:      game,
 		Level:     level,
 		Text:      "New Game",
 		Action: func() {
-			NewGame()
+			NewGame(game)
 		},
 	}
 
 	buttonExit := entities.Button{
 		Rectangle: tl.NewRectangle(16, 4, 16, 3, tl.ColorRed),
-		Game:      game,
 		Level:     level,
 		Text:      "Exit",
 		Action: func() {
 			os.Exit(0)
+		},
+	}
+
+	buttonScoreboard := entities.Button{
+		Rectangle: tl.NewRectangle(-32, 4, 16, 3, tl.ColorYellow),
+		Level:     level,
+		Text:      "Scoreboard",
+		Action: func() {
+			Scoreboard(game)
 		},
 	}
 
@@ -51,8 +56,7 @@ func MainMenu() {
 
 	level.AddEntity(&buttonPlay)
 
-	level.AddEntity(tl.NewRectangle(-32, 4, 16, 3, tl.ColorYellow))
-	level.AddEntity(tl.NewText(-29, 5, "Scoreboard", tl.ColorWhite, tl.ColorYellow))
+	level.AddEntity(&buttonScoreboard)
 
 	level.AddEntity(&buttonExit)
 

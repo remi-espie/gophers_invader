@@ -4,7 +4,6 @@ import tl "github.com/JoelOtter/termloop"
 
 type Button struct {
 	*tl.Rectangle
-	Game   *tl.Game
 	Level  *tl.BaseLevel
 	Text   string
 	Action func()
