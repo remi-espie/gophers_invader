@@ -14,9 +14,7 @@ type Player struct {
 
 func (player *Player) Draw(screen *tl.Screen) {
 	screenWidth, screenHeight := screen.Size()
-	x, y := player.Position()
-	player.Level.SetOffset(screenWidth/2-x, screenHeight/2-y)
-	// We need to make sure and call Draw on the underlying Entity.
+	player.Level.SetOffset(screenWidth/2, screenHeight/2)
 	player.Entity.Draw(screen)
 }
 func (player *Player) Tick(event tl.Event) {
@@ -54,17 +52,21 @@ func (player *Player) Shoot() {
 
 	for _, entity := range entities {
 		if _, ok := entity.(*Laser); ok {
-			return
+			laser := entity.(*Laser)
+			if laser.ShootByPlayer {
+				return
+			}
 		}
 	}
 
 	x, y := player.Position()
 	laser := Laser{
-		Entity:      tl.NewEntity(x+1, y-1, 1, 1),
-		Level:       player.Level,
-		Game:        player.Game,
-		WaitingTime: 0.1,
-		TimeDelta:   0,
+		Entity:        tl.NewEntity(x+1, y-1, 1, 1),
+		ShootByPlayer: true,
+		Level:         player.Level,
+		Game:          player.Game,
+		WaitingTime:   0.1,
+		TimeDelta:     0,
 	}
 
 	laser.SetCell(0, 0, &tl.Cell{Fg: tl.ColorYellow, Ch: '|'})

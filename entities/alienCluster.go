@@ -1,14 +1,51 @@
 package entities
 
-import tl "github.com/JoelOtter/termloop"
+import (
+	tl "github.com/JoelOtter/termloop"
+	"strconv"
+	"time"
+)
 
 type AlienCluster struct {
+	*tl.Entity
 	Game            *tl.Game
 	Level           *tl.BaseLevel
 	AlienLowByte    []byte
 	AlienMiddleByte []byte
 	AlienHighByte   []byte
 	WaitingTime     float64
+	alienArray      []Alien
+	scoreText       *tl.FpsText
+	timeText        *tl.FpsText
+}
+
+func (alienCluster *AlienCluster) Draw() {
+	alienCluster.scoreText = tl.NewFpsText(25, 16, tl.ColorRed, tl.ColorBlack, 60)
+	alienCluster.scoreText.SetText("0")
+	alienCluster.Level.AddEntity(alienCluster.scoreText)
+
+	alienCluster.timeText = tl.NewFpsText(-25, 16, tl.ColorGreen, tl.ColorBlack, 60)
+	alienCluster.Level.AddEntity(alienCluster.timeText)
+
+	alienCluster.CreateCluster()
+	go alienCluster.Loop()
+
+}
+
+func (alienCluster *AlienCluster) Loop() {
+	for {
+		score := 55
+		for _, entity := range alienCluster.Level.Entities {
+			if _, ok := entity.(*Alien); ok {
+				score -= 1
+			}
+		}
+
+		bonus := int((1.0 / alienCluster.WaitingTime) * 100)
+
+		alienCluster.scoreText.SetText(strconv.Itoa(score * bonus))
+		time.Sleep(60 * time.Millisecond)
+	}
 }
 
 func (alienCluster *AlienCluster) CreateCluster() {

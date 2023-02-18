@@ -6,10 +6,11 @@ import (
 
 type Laser struct {
 	*tl.Entity
-	Game        *tl.Game
-	Level       *tl.BaseLevel
-	WaitingTime float64
-	TimeDelta   float64
+	Game          *tl.Game
+	Level         *tl.BaseLevel
+	ShootByPlayer bool
+	WaitingTime   float64
+	TimeDelta     float64
 }
 
 func (laser *Laser) Draw(screen *tl.Screen) {
@@ -22,7 +23,12 @@ func (laser *Laser) Tick(e tl.Event) {
 	if laser.TimeDelta > laser.WaitingTime {
 		laser.TimeDelta = 0
 		x, y := laser.Position()
-		laser.SetPosition(x, y-1)
+		if laser.ShootByPlayer {
+			laser.SetPosition(x, y-1)
+		} else {
+			laser.SetPosition(x, y+1)
+		}
+
 	}
 }
 
@@ -31,7 +37,9 @@ func (laser *Laser) Collide(collision tl.Physical) {
 		laser.Level.RemoveEntity(laser)
 	}
 	if _, ok := collision.(*Alien); ok {
-		laser.Level.RemoveEntity(laser)
+		if laser.ShootByPlayer {
+			laser.Level.RemoveEntity(laser)
+		}
 	}
 	if _, ok := collision.(*Laser); ok {
 		laser.Level.RemoveEntity(laser)
