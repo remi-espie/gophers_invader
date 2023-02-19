@@ -1,4 +1,4 @@
-//go:build linux
+//go:build linux || windows
 
 package screen
 
@@ -140,13 +140,21 @@ func getScoreboard(db *sql.DB) []scoreBoard {
 		log.Fatal(err)
 	}
 	scoreboard := make([]scoreBoard, 0)
-	defer row.Close()
+	defer func(row *sql.Rows) {
+		err := row.Close()
+		if err != nil {
+			return
+		}
+	}(row)
 	for row.Next() {
 		var id int
 		var score int
 		var duration float32
 		var name string
-		row.Scan(&id, &score, &duration, &name)
+		err := row.Scan(&id, &score, &duration, &name)
+		if err != nil {
+			return nil
+		}
 		scoreboard = append(scoreboard, scoreBoard{id, score, duration, name})
 	}
 	return scoreboard

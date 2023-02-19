@@ -1,4 +1,0 @@
-https://github.com/afagundes/go-invaders
-https://github.com/JoelOtter/termloop
-
-https://www.htmlsymbols.xyz
