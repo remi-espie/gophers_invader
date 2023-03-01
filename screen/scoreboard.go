@@ -100,6 +100,8 @@ func AddScore(name string, score int, duration float32) {
 		}
 	}(sqliteDatabase)
 
+	createTable(sqliteDatabase)
+
 	insertScore(sqliteDatabase, score, duration, name)
 }
 
