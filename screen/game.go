@@ -76,7 +76,7 @@ func NewGame(game *tl.Game, mainMenuLevel *tl.BaseLevel) {
 func Loop(timer *tl.FpsText, scoreText *tl.FpsText, waintingTime *float64, level *tl.BaseLevel, gameOverZone entities.GameOverZone, game *tl.Game, mainMenuLevel *tl.BaseLevel, playerGameOver *bool) {
 	deltaTime := float32(0.0)
 	for {
-		deltaTime += 0.01
+		deltaTime += 0.001
 		timer.SetText(fmt.Sprintf("%.4f", deltaTime))
 
 		score := 55
